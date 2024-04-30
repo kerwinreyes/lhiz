@@ -22,7 +22,7 @@ func main() {
 	//Appointment
 	router.POST("/appointment", routes.AddAppointment)
 	router.GET("/appointments", routes.GetAppointments)
-	router.DELETE("/appointment", routes.DeleteAppointment)
+	router.DELETE("/appointment/:id", routes.DeleteAppointment)
 	//Service
 	router.GET("/services", routes.GetServices)
 	router.PUT("/service/:id", routes.UpdateService)

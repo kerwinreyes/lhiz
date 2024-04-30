@@ -31,6 +31,7 @@ func GetServices(c *gin.Context) {
 			Errors:  []string{err.Error()},
 		}
 		c.JSON(http.StatusInternalServerError, errorResponse)
+		return
 	}
 	var result []models.Service
 	if err = cursor.All(ctx, &result); err != nil {
@@ -41,6 +42,8 @@ func GetServices(c *gin.Context) {
 			Errors:  []string{err.Error()},
 		}
 		c.JSON(http.StatusInternalServerError, errorResponse)
+		return
+
 	}
 	defer cancel()
 	c.JSON(http.StatusOK, result)
@@ -57,6 +60,7 @@ func AddService(c *gin.Context) {
 			Errors:  []string{err.Error()},
 		}
 		c.JSON(http.StatusBadRequest, errorResponse)
+		return
 	}
 	validationErr := validate.Struct(service)
 	if validationErr != nil {
@@ -66,6 +70,7 @@ func AddService(c *gin.Context) {
 			Errors:  []string{validationErr.Error()},
 		}
 		c.JSON(http.StatusBadRequest, errorResponse)
+		return
 	}
 
 	service.ID = primitive.NewObjectID()
@@ -138,6 +143,7 @@ func DeleteService(c *gin.Context) {
 			Errors:  []string{err.Error()},
 		}
 		c.JSON(http.StatusInternalServerError, errorResponse)
+		return
 	}
 	defer cancel()
 	c.JSON(http.StatusOK, "")

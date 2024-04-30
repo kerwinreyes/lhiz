@@ -36,10 +36,10 @@ func AddAppointment(c *gin.Context) {
 		return
 	}
 	appointment.ID = primitive.NewObjectID()
-
+	appointment.CreatedAt = time.Now().UTC()
 	result, insertErr := appointmentCollection.InsertOne(ctx, appointment)
 	if insertErr != nil {
-		msg := fmt.Sprintf("appointment item was not created")
+		msg := fmt.Sprintf("Error while creating an appointment")
 
 		errorResponse := models.ErrorResponse{
 			Message: msg,
@@ -109,14 +109,3 @@ func DeleteAppointment(c *gin.Context) {
 	defer cancel()
 	c.JSON(http.StatusOK, "")
 }
-
-// func GetAppointments(c *gin.Context) {
-//     var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-//     var appointment models.Appointment
-//     if err := c.BindJSON(&appointment); err != nil {
-
-//     }
-
-//     defer cancel()
-//     c.JSON(http.StatuOk, "")
-// }
