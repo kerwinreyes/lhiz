@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import CalendarEvents from '../../components/calendar';
 import { IService, IServiceList } from '../../interfaces';
+import { useServices } from '../../hooks/services';
 const Services = () => {
 
     const [currentDay, setCurrentDay] = useState<Date>(new Date())
-    const [services, setServices] = useState<IService[]>([])
-    const devURL = "http://localhost:5000"
-    const getServices = async () => {
-        const response = await fetch(`${devURL}/services`)
-        const responseJSON: IService[] = await response.json()
-        setServices(responseJSON)
-    }
+    const [servicesList, setServices] = useState<IService[]>([])
+    const {services , loading} = useServices()
     useEffect(() => {
-        getServices()
+        setServices(services)
     }, [])
     return (
         <div className="p-10 w-screen">

@@ -29,6 +29,9 @@ import globalize from 'globalize'
 import moment from 'moment';
 import SnackBarComponent from '../snackbar';
 import { IAppointmentResponse } from '../../interfaces';
+import { useAppointment } from '../../hooks/appointment';
+import { scheduleAppointment } from '../../redux/appointments/action';
+import { useDispatch } from 'react-redux';
 
 interface ICalendar {
     day: Date
@@ -60,7 +63,6 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         for (var i = 0; i < holidayList.length; i++) {
         }
     } 
-    const devURL = "http://localhost:5000"
 
     const localizer = globalizeLocalizer(globalize)
 
@@ -80,28 +82,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     const handleUpdateEvent = (code: string) => {
 
     }
-    const getEventList = async() => {
-        try {
-            const response = await (await fetch(`${devURL}/appointments`)).json()
-            const eventResponse: IEvent[] =  response.map((item: IAppointmentResponse) => {
-                const startEnd: Date = new Date(item.date)
-                const endDate: Date = startEnd
-                endDate.setHours(endDate.getHours() + 1)
-                return {
-                    id: item._id,
-                    date: item.date,
-                    color: BG_COLOR.success,
-                    title: item.service,
-                    start: new Date(item.date),
-                    end: endDate,
-                    allDay:false
-                }
-            })
-            setEventList(eventResponse)
-        } catch (err) {
-
-        }
-    }
+    const { finalAppointmentList, schedule} = useAppointment()
     const formik = useFormik<FormValues>({
         initialValues: {
             email: "",
@@ -114,12 +95,12 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             try {
                 setIsLoading(true)
                 setIsOpen(false)
-                
-                const responseJSON = await fetch(`${devURL}/appointment`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(values),
-                  })
+                schedule(JSON.stringify(values))
+                // const responseJSON = await fetch(`sadd/appointment`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: ,
+                //   })
                 setSnackBarStatus({ show: true, message: "Appointment has successfully created.", bg:BG_COLOR.success})
                 formik.resetForm()
             } catch (err) {
@@ -145,16 +126,13 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         setIsOpen(false)
     }
     
-    useEffect(() => {
-        getEventList()
-    },[])
     return(
         <div className='w-full'>
             <Calendar 
                 style={{height: 500}}
                 className='p-5'
                 localizer={localizer}
-                events={eventList}
+                events={finalAppointmentList}
                 views={["month", "week"]}
                 defaultDate={moment().toDate()}
                 defaultView='month'
