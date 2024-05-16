@@ -19,7 +19,8 @@ type Appointment struct {
 
 type AppointmentsRequest struct {
 	Service  string `json:"service,omitempty"`
-	Customer string `json:"customer,omitempty"`
+	Customer string `json:"name,omitempty"`
 	Date     string `json:"date,omitempty"`
-	Time     string `json:"time,omitempty"`
+	Phone    string `json:"phone,omitempty"`
+	Email    string `json:"email,omitempty"`
 }

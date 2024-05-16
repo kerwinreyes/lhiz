@@ -1,0 +1,9 @@
+.rbc-btn-group {
+    background-color: rgb(112, 158, 228);
+}
+.rbc-day-bg:hover {
+    cursor: pointer;
+}
+button {
+    margin-left: 100px;
+}
