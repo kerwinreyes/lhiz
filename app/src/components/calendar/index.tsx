@@ -19,6 +19,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { Calendar, 
          NavigateAction, 
          SlotInfo, 
@@ -37,6 +38,7 @@ import moment from 'moment';
 import SnackBarComponent from '../snackbar';
 import { IAppointmentRequest } from '../../interfaces';
 import { useAppointment } from '../../hooks/appointment';
+import dayjs from 'dayjs';
 
 interface ICalendar {
     day: Date
@@ -61,7 +63,7 @@ interface FormValues {
 }
 const CalendarEvents:React.FC<ICalendar> = (props) => {
     const { day, services } = props
-    const [currentDate, setCurrentDate] = useState<number>(0)
+    const [currentDate, setCurrentDate] = useState<Date>(new Date())
     const getHolidayList = () => {
         const holidayList = []
         for (var i = 0; i < holidayList.length; i++) {
@@ -69,17 +71,13 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     } 
 
     const localizer = globalizeLocalizer(globalize)
+    const iconClassName = "text-luxe-pink hover:bg-luxe-light hover:text-luxe-red font-thin"
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [isMonthView, setIsMonthView] = useState<boolean>(true)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [snackBarStatus, setSnackBarStatus] = useState<{ show: boolean, message: string, bg: string}>({ show: false, message: "", bg:""})
-    const handleSlotSelected= (info: SlotInfo) => {
-        console.log({info})
-        const selectedDay = info.start.getDate() 
-        
-        setIsOpen(true)
-    }
+    
     const handleEventSelected = (event: IEvent) => {
         setIsOpen(true)
         
@@ -128,8 +126,17 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             phone: Yup.string().required("Please enter your phone number")
         })
     })
+    const handleSlotSelected= (info: SlotInfo) => {
+        
+        if (info.start.getDate() == new Date().getDate() || new Date() <= info.start){
+            const selectedDay = info.start
+            setCurrentDate(selectedDay)
+            formik.setFieldValue('date', selectedDay?.toString());
+            
+            setIsOpen(true)
+        } 
+    }
     const customToolbar = (props: ToolbarProps) => {
-        const iconClassName = "text-luxe-pink hover:bg-luxe-light hover:text-luxe-red font-thin"
         const { label, onNavigate, onView } = props
         
         const navigate = (action: NavigateAction) => {
@@ -167,11 +174,21 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         formik.resetForm()
         setIsOpen(false)
     }
+    const minDate = new Date();
+    const handleBookAppointment = () => {
+        const selectedDay = minDate
+        setCurrentDate(selectedDay)
+        formik.setFieldValue('date', minDate.toString());
+        setIsOpen(true)
+    }
     return(
         <div className='w-full'>
-            <Calendar 
-                style={{height: 500}}
-                className='p-5'
+            <div className="w-full flex justify-end pr-5">
+                <Button onClick={handleBookAppointment} className="rounded-xl px-6 text-luxe-light bg-luxe-brown hover:bg-luxe-light hover:text-luxe-red hover:shadow-lg">Book an appointment</Button>
+            </div>
+            <Calendar
+                style={{ height: "80vh"}}
+                className='px-5'
                 localizer={localizer}
                 events={finalAppointmentList || []}
                 views={["month", "week"]}
@@ -181,8 +198,8 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                     const eventData = finalAppointmentList.find(ot => ot.id === event.id)
                     const backgroundColor = eventData && eventData.color
                     return {style: { backgroundColor,}}
+
                 }}
-                // toolbar={CustomToolbar}
                 components={{
                     toolbar: customToolbar
                 }}
@@ -190,6 +207,17 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 onSelectEvent={(event:IEvent) => handleEventSelected(event)}
                 onSelectSlot={(info) => handleSlotSelected(info)}
                 timeslots={5}
+                min={minDate}
+                dayPropGetter={(date) => {
+                    if (date <= new Date()) {
+                        if (date.getDate() == new Date().getDate()){
+                            return {style: { background:"transparent"}}
+                        }
+                        return {style: { backgroundColor:"#D1C7BD", opacity:".5", cursor: "auto" }}
+                    }
+                    return {style: { background:"transparent"}}
+
+                }}
             />
             {
                 snackBarStatus.show && (
@@ -207,10 +235,11 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 onClose={handleClose}
                 fullWidth={true}
             >
-                <DialogTitle>
-                    Book an Appointment
+                <DialogTitle className="my-2 flex justify-items-center text-center text-luxe-brown text-xl font-extralight items-center">
+                    BOOK AN APPOINTMENT
                 </DialogTitle>
                 <IconButton 
+                    className="text-luxe-brown"
                     aria-label="close"
                     onClick={handleClose}
                     sx={{
@@ -225,7 +254,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 <form onSubmit={formik.handleSubmit} id="appointment" className='w-full'>
                     <DialogContent dividers className="space-y-4">
                         <TextField
-                            className="pt-3"
+                            className="mt-3"
                             fullWidth={true}
                             id="email"
                             name="email"
@@ -253,7 +282,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             fullWidth={true}
                             id="phone"
                             name="phone"
-                            label="phone"
+                            label="Phone"
                             value={formik.values.phone}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -286,9 +315,10 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
 
                         <FormControl fullWidth className="mt-3">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <TimePicker
+                            <DateTimePicker
                             ampm={true}
-                            format="HH:mm"
+                            // format="HH:mm"
+                            value={dayjs(currentDate)}
                             slotProps={{
                                 textField: {
                                 label: "Appointment Date",
@@ -298,6 +328,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             onChange={value => {
                                 formik.setFieldValue('date', value?.toString());
                             }}
+                            minDate={dayjs()}
                             />
                         </LocalizationProvider>
                         {formik.touched.date && formik.errors.date && (
@@ -308,13 +339,12 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                     <DialogActions>
                     {
                         !isLoading && (
-                            <Button variant="outlined" onClick={handleClose}>Cancel</Button>
+                            <Button disableElevation className={`rounded-none border-solid border-2 border-luxe-red px-6 text-luxe-red hover:bg-luxe-red hover:text-luxe-light hover:border-2 hover:border-luxe-red`} onClick={handleClose}>Cancel</Button>
                         )    
                     }
                     {
                         !isLoading ?
-
-                            <Button form="appointment" color="primary" variant="contained" type="submit" disabled={!formik.dirty}>
+                            <Button form="appointment" className="rounded-none text-luxe-light bg-luxe-red px-6 py-2 hover:bg-luxe-brown disabled:text-luxe-light" type="submit" disabled={!formik.dirty}>
                                 Submit
                             </Button>
                             : <CircularProgress color="secondary" />

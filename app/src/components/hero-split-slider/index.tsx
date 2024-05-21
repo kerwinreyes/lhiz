@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { Transition } from '@headlessui/react'
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import ContentCutIcon from '@mui/icons-material/ContentCut';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+
 import "./style.scss";
 const HeroSplitSlider = () => {
     const {services , loading} = useServices()
@@ -38,6 +42,16 @@ const HeroSplitSlider = () => {
         }
     }, [index])
     return (
+        <>
+        <div className="z-10 absolute bottom-5 right-5">
+            <div>
+                <ArrowUpwardIcon onClick={prevSlide} className=" text-5xl text-luxe-red hover:cursor-pointer hover:text-luxe-brown" />
+            </div>
+            <div>
+                <ArrowDownwardIcon onClick={nextSlide} className=" text-5xl text-luxe-red hover:cursor-pointer hover:text-luxe-brown"/>
+            </div>
+
+        </div>
         <div className="flex justify-between items-center h-screen w-full">
             <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-red">
                 {
@@ -56,7 +70,7 @@ const HeroSplitSlider = () => {
                                     className="absolute w-full h-full flex items-center justify-center bg-luxe-red text-white"
                                 >
                                     <div className="image-layout">
-                                        <img src={item.image} className="object-fit h-48 w-48 " />
+                                        <img src={item.image} className="object-fit h-72 w-72 " />
                                     </div>
                                 </div>
                             </Transition>
@@ -64,7 +78,7 @@ const HeroSplitSlider = () => {
                     })
                 }
             </div>
-            <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-nude">
+            <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-pink">
                 {
                     services.map((item, i) => {
                         return (
@@ -106,6 +120,7 @@ const HeroSplitSlider = () => {
                 }
             </div>
         </div>
+        </>
     )
 }
 
