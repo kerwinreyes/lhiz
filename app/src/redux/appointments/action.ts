@@ -36,6 +36,7 @@ export const scheduleAppointment = (body: string): AppThunk => async (dispatch, 
         dispatch({ type: SCHEDULE_APPOINTMENT_REQUEST })
         const response = await api.post('/appointment', body)
         dispatch({ type: SCHEDULE_APPOINTMENT_SUCCESS, payload: response.data })
+        fetchAppointments()
     } catch (err) {
         dispatch({ type: SCHEDULE_APPOINTMENT_SUCCESS, payload: "Error while scheduling" })
     }

@@ -38,8 +38,8 @@ const HeroSplitSlider = () => {
         }
     }, [index])
     return (
-        <div className="flex justify-between items-center h-screen w-full bg-luxe-light">
-            <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-nude">
+        <div className="flex justify-between items-center h-screen w-full">
+            <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-red">
                 {
                     services.map((item, i) => {
                         return (
@@ -53,7 +53,7 @@ const HeroSplitSlider = () => {
                                 leaveTo="opacity-0 -translate-y-12"
                             >
                                 <div
-                                    className="absolute w-full h-full flex items-center justify-center bg-luxe-nude text-white"
+                                    className="absolute w-full h-full flex items-center justify-center bg-luxe-red text-white"
                                 >
                                     <div className="image-layout">
                                         <img src={item.image} className="object-fit h-48 w-48 " />
@@ -64,7 +64,7 @@ const HeroSplitSlider = () => {
                     })
                 }
             </div>
-            <div className="w-3/6 h-screen relative overflow-hidden">
+            <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-nude">
                 {
                     services.map((item, i) => {
                         return (
@@ -78,7 +78,7 @@ const HeroSplitSlider = () => {
                                 leaveTo="opacity-0 translate-y-12"
                             >
                                 <div
-                                    className="absolute w-full h-full flex items-center justify-center bg-luxe-light text-luxe-brown"
+                                    className="absolute w-full h-full flex items-center justify-center text-luxe-brown"
                                 >
                                     <div className="text-left">
                                         <div>
@@ -89,7 +89,7 @@ const HeroSplitSlider = () => {
                                             {item.description || "this is the dress you"}
                                         </Typography>
                                         <Button 
-                                            className="py-3 px-5 bg-luxe-brown hover:bg-luxe-nude text-luxe-light text-xs" 
+                                            className="py-3 px-5 bg-luxe-brown hover:bg-luxe-red text-luxe-light text-xs" 
                                             onClick={navigateToAppointment} 
                                             disableElevation
                                         >

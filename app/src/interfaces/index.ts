@@ -18,3 +18,8 @@ export interface IAppointmentResponse{
     time: string
     date: string
 }
+export interface IAppointmentRequest {
+    service: string
+    customer: string
+    date: string
+}

@@ -6,7 +6,7 @@ import { IAppointmentResponse } from '../interfaces'
 import { BG_COLOR } from '../utils/constant'
 export const useAppointment = () => {
     const dispatch = useDispatch<AppDispatch>()
-    const appointments = useSelector((state: RootState) => state.appointment.appointment)
+    const appointments = useSelector((state: RootState) => state.appointment?.appointment)
     
     useEffect(() => {
         dispatch(fetchAppointments())
@@ -16,7 +16,7 @@ export const useAppointment = () => {
         dispatch(fetchAppointments())
 
       };
-    const finalAppointmentList = appointments.map((item: IAppointmentResponse) => {
+    const finalAppointmentList = !!appointments?.length ? appointments.map((item: IAppointmentResponse) => {
         const startEnd: Date = new Date(item.date)
         const endDate: Date = startEnd
         endDate.setHours(endDate.getHours() + 1)
@@ -29,6 +29,6 @@ export const useAppointment = () => {
             end: endDate,
             allDay:false
         }
-    })
+    }) : []
     return {finalAppointmentList, schedule}
 }

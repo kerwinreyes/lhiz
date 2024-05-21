@@ -33,7 +33,7 @@ const Overlay = () => {
     })
     return (
         <Scroll html>
-            <div className="w-screen">
+            <div className="w-screen " >
             <Section opacity={opacityFirst} align="right" content={
                 <h1 className="font-serif text-2xl">Hello! I am Eliza, with a passion for fashion and an eye for detail, I brings dreams to life, one stitch at a time.</h1>
             } />

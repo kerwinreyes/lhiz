@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const Header = () => {
     const [ showNav, setShowNme] = useState<boolean>(false)
-    const linkClassName = "block py-2 px-3 text-sm text-gray rounded md:bg-transparent md:text-gray-500 md:hover:text-gray-900 md:p-0 "
+    const linkClassName = "relative w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-luxe-nude after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left text-sm font-light text-white md:bg-transparent md:text-white md:hover:text-white  "
     return (
         <>
         <nav className='absolute w-full z-10'>
@@ -17,12 +17,9 @@ const Header = () => {
                     </svg>
                 </button>
                 <div className={`${showNav ? '' : 'hidden'} w-full md:w-auto md:block md:w-auto"`} id="navbar-default">
-                    <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:bg-transparent md:flex-row md:space-x-8 md:mt-0 md:border-0  ">
+                    <ul className="flex flex-col p-4 md:p-0 border border-gray-100 rounded-lg bg-gray-50 md:bg-transparent md:flex-row md:space-x-8 md:mt-0 md:border-0  ">
                         <li>
                             <Link to="/" className={linkClassName}>H O M E</Link>
-                        </li>
-                        <li>
-                            <Link to="/gallery" className={linkClassName}>G A L L E R Y</Link>
                         </li>
                         <li>
                             <Link to="/services" className={linkClassName}>S E R V I C E S</Link>

@@ -6,11 +6,9 @@ const Appointment = () => {
 
     const [currentDay, setCurrentDay] = useState<Date>(new Date())
     const { services, loading, error} = useServices()
-    useEffect(() => {
-        // setServices(servicesHook.services)
-    }, [])
+    
     return (
-        <div className="p-10 w-screen">
+        <div className="p-10 h-screen w-screen">
             <CalendarEvents  
                 day={currentDay} 
                 services={services.map((item) => {return {label: item.name, value: item.slug}})} />

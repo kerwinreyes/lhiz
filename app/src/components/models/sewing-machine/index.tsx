@@ -11,6 +11,7 @@ import gsap from 'gsap'
 import { useFrame } from '@react-three/fiber'
 
 type GLTFResult = GLTF & {
+  isLoading: boolean,
   nodes: {
     ['01_office001_1']: THREE.Mesh
     ['01_office001_2']: THREE.Mesh

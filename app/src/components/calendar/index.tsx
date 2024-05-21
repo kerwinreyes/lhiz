@@ -7,17 +7,24 @@ import { Button,
          DialogContent, 
          DialogTitle, 
          FormControl, 
+         Grid, 
          IconButton, 
          InputLabel, 
          MenuItem, 
          Select, 
          TextField, 
         } from '@mui/material';
-
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { Calendar, DateLocalizer, Event, SlotInfo, globalizeLocalizer, momentLocalizer } from 'react-big-calendar'
+import { Calendar, 
+         NavigateAction, 
+         SlotInfo, 
+         ToolbarProps, 
+         View, 
+         globalizeLocalizer} from 'react-big-calendar'
 import CloseIcon from '@mui/icons-material/Close';
 
 import { useFormik, FormikProps } from "formik";
@@ -28,10 +35,8 @@ import "./style/index.css"
 import globalize from 'globalize'
 import moment from 'moment';
 import SnackBarComponent from '../snackbar';
-import { IAppointmentResponse } from '../../interfaces';
+import { IAppointmentRequest } from '../../interfaces';
 import { useAppointment } from '../../hooks/appointment';
-import { scheduleAppointment } from '../../redux/appointments/action';
-import { useDispatch } from 'react-redux';
 
 interface ICalendar {
     day: Date
@@ -56,8 +61,7 @@ interface FormValues {
 }
 const CalendarEvents:React.FC<ICalendar> = (props) => {
     const { day, services } = props
-    const [eventList, setEventList] = useState<IEvent[]>([])
-    const [appointments, setAppointments] = useState<IEvent[]>([])
+    const [currentDate, setCurrentDate] = useState<number>(0)
     const getHolidayList = () => {
         const holidayList = []
         for (var i = 0; i < holidayList.length; i++) {
@@ -67,9 +71,13 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     const localizer = globalizeLocalizer(globalize)
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [isMonthView, setIsMonthView] = useState<boolean>(true)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [snackBarStatus, setSnackBarStatus] = useState<{ show: boolean, message: string, bg: string}>({ show: false, message: "", bg:""})
     const handleSlotSelected= (info: SlotInfo) => {
+        console.log({info})
+        const selectedDay = info.start.getDate() 
+        
         setIsOpen(true)
     }
     const handleEventSelected = (event: IEvent) => {
@@ -95,12 +103,12 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             try {
                 setIsLoading(true)
                 setIsOpen(false)
-                schedule(JSON.stringify(values))
-                // const responseJSON = await fetch(`sadd/appointment`, {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: ,
-                //   })
+                const body:IAppointmentRequest = {
+                    customer: values.name,
+                    service: values.services,
+                    date: values.date
+                }
+                schedule(JSON.stringify(body))
                 setSnackBarStatus({ show: true, message: "Appointment has successfully created.", bg:BG_COLOR.success})
                 formik.resetForm()
             } catch (err) {
@@ -120,29 +128,66 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             phone: Yup.string().required("Please enter your phone number")
         })
     })
-    
+    const customToolbar = (props: ToolbarProps) => {
+        const iconClassName = "text-luxe-pink hover:bg-luxe-light hover:text-luxe-red font-thin"
+        const { label, onNavigate, onView } = props
+        
+        const navigate = (action: NavigateAction) => {
+            onNavigate(action);
+        };
+
+        const view = (view: View) => {
+            view === "month" ? setIsMonthView(true) : setIsMonthView(false)
+            onView(view);
+        };
+        return (
+            <>
+                <Grid container className="flex justify-between py-5">
+                <Grid item>
+                    <Button disableElevation className={`rounded-none ${iconClassName}`} onClick={() => navigate('PREV')}>
+                        <ArrowBackIcon className="font-thin" />
+                    </Button>
+                    <Button disableElevation className={`rounded-none ${iconClassName}`} onClick={() => navigate('NEXT')}>
+                        <ArrowForwardIcon className="font-thin" />
+                    </Button>
+                </Grid>
+                <Grid item>
+                <span>{label}</span>
+                </Grid>
+                <Grid item>
+                    <Button disableElevation className={`rounded-none ${iconClassName} px-5 ${isMonthView ? "bg-luxe-light text-luxe-red" : ""}`} onClick={() => view('month')}>Month</Button>
+                    <Button disableElevation className={`rounded-none ${iconClassName} px-5 ${!isMonthView ? "bg-luxe-light text-luxe-red" : ""}`} onClick={() => view('week')}>Week</Button>
+                    <Button className='hidden' onClick={() => view('day')}>Day</Button>
+                </Grid>
+                </Grid>
+            </>
+        )
+    }
     const handleClose = () => {
         formik.resetForm()
         setIsOpen(false)
     }
-    
     return(
         <div className='w-full'>
             <Calendar 
                 style={{height: 500}}
                 className='p-5'
                 localizer={localizer}
-                events={finalAppointmentList}
+                events={finalAppointmentList || []}
                 views={["month", "week"]}
                 defaultDate={moment().toDate()}
                 defaultView='month'
                 eventPropGetter={(event) => {
-                    const eventData = eventList.find(ot => ot.id === event.id)
+                    const eventData = finalAppointmentList.find(ot => ot.id === event.id)
                     const backgroundColor = eventData && eventData.color
                     return {style: { backgroundColor,}}
                 }}
+                // toolbar={CustomToolbar}
+                components={{
+                    toolbar: customToolbar
+                }}
                 selectable={true}
-                onSelectEvent={(event) => handleEventSelected(event)}
+                onSelectEvent={(event:IEvent) => handleEventSelected(event)}
                 onSelectSlot={(info) => handleSlotSelected(info)}
                 timeslots={5}
             />
