@@ -9,6 +9,7 @@ import (
 type Appointment struct {
 	ID        primitive.ObjectID `bson:"_id"`
 	Service   string             `json:"service"`
+	Email     string             `json:"email"`
 	Price     float64            `json:"price"`
 	Customer  string             `json:"customer"`
 	Date      string             `json:"date"`

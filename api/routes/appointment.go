@@ -2,21 +2,73 @@ package routes
 
 import (
 	"api/models"
+	"bytes"
 	"context"
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
+	"net/smtp"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var validate = validator.New()
+var auth smtp.Auth
 var appointmentCollection *mongo.Collection = OpenCollection(Client, "appointment")
 
+type Request struct {
+	from    string
+	to      []string
+	subject string
+	body    string
+}
+
+func NewRequest(to []string, subject, body, from string) *Request {
+	return &Request{
+		to:      to,
+		subject: subject,
+		body:    body,
+		from:    from,
+	}
+}
+func (r *Request) SendEmail() (bool, error) {
+	mime := "MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n"
+
+	subject := "Subject: " + r.subject + "!\n"
+	msg := []byte("To: " + r.to[0] + "\r\n" +
+		"From: " + r.from + "\r\n" +
+		subject +
+		mime +
+		"\r\n" +
+		r.body)
+	addr := "smtp.gmail.com:587"
+
+	if err := smtp.SendMail(addr, auth, r.from, r.to, msg); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+func (r *Request) ParseTemplate(templateFileName string, data interface{}) error {
+	t, err := template.ParseFiles(templateFileName)
+	if err != nil {
+		return err
+	}
+	buf := new(bytes.Buffer)
+	if err = t.Execute(buf, data); err != nil {
+		return err
+	}
+	r.body = buf.String()
+	return nil
+}
 func AddAppointment(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	var appointment models.Appointment
@@ -50,6 +102,42 @@ func AddAppointment(c *gin.Context) {
 		return
 	}
 
+	err := godotenv.Load(filepath.Join(os.Getenv("APP_PATH"), ".env"))
+
+	if err != nil {
+		msg := fmt.Sprintf("Error loading .env file")
+
+		errorResponse := models.ErrorResponse{
+			Message: msg,
+			Code:    400,
+			Errors:  []string{validationErr.Error()},
+		}
+		c.JSON(http.StatusInternalServerError, errorResponse)
+	}
+
+	mail := os.Getenv("EMAIL_ADDRESS")
+	pass := os.Getenv("APP_PASSWORD")
+
+	host := "smtp.gmail.com"
+
+	// port := "587"
+
+	auth = smtp.PlainAuth("", mail, pass, host)
+	templateData := struct {
+		Name string
+		URL  string
+	}{
+		Name: appointment.Customer,
+		URL:  "",
+	}
+	r := NewRequest([]string{appointment.Email}, "Appointment With Eliza", "Hello, World!", mail)
+	if err := r.ParseTemplate("template/template.html", templateData); err == nil {
+		_, err := r.SendEmail()
+		if err != nil {
+			log.Fatal("Error while sending Email", err.Error())
+		}
+
+	}
 	defer cancel()
 	c.JSON(http.StatusOK, result)
 }

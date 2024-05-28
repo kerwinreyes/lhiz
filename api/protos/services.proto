@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package service;
+
+option go_package ="/pb/service";
+
+message ServiceResponse {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    string slug = 4;
+    string price = 5;
+}
+message ServicesResponse {
+    ServiceResponse Service = 1;
+}
+message Request {
+
+}
+message ServiceRequest{
+    string name = 1;
+    string description = 2;
+    string slug = 3;
+    string price = 4;
+}
+service Service {
+    rpc CreateService (ServiceRequest) returns (ServiceResponse);
+    rpc EditService (ServiceRequest) returns (ServiceResponse);
+    rpc GetServices (Request) returns (stream ServicesResponse);
+}

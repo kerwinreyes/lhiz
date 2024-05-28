@@ -92,14 +92,14 @@ const HeroSplitSlider = () => {
                                 leaveTo="opacity-0 translate-y-12"
                             >
                                 <div
-                                    className="absolute w-full h-full flex items-center justify-center text-luxe-brown"
+                                    className="w-full h-full  flex items-center align-center justify-center text-luxe-brown"
                                 >
-                                    <div className="text-left">
-                                        <div>
-                                        <Typography variant="h3">
+                                    <div className="text-left w-3/5">
+                                        <div className="">
+                                        <Typography variant="h4">
                                             {item.name}
                                         </Typography>
-                                        <Typography>
+                                        <Typography className="mt-5 mb-10">
                                             {item.description || "this is the dress you"}
                                         </Typography>
                                         <Button 

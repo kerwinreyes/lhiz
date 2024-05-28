@@ -9,10 +9,12 @@ import { Button,
          FormControl, 
          Grid, 
          IconButton, 
+         InputAdornment, 
          InputLabel, 
          MenuItem, 
          Select, 
-         TextField, 
+         TextField,
+         Typography, 
         } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -38,7 +40,10 @@ import moment from 'moment';
 import SnackBarComponent from '../snackbar';
 import { IAppointmentRequest } from '../../interfaces';
 import { useAppointment } from '../../hooks/appointment';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import { DateView, TimeView } from '@mui/x-date-pickers/models';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickerSelectionState } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types';
 
 interface ICalendar {
     day: Date
@@ -59,17 +64,17 @@ interface FormValues {
   name: string,
   services: string,
   date: string,
+  time: string,
   phone: string,
 }
 const CalendarEvents:React.FC<ICalendar> = (props) => {
     const { day, services } = props
+    const [selectedTime, setSelectedTime] = useState<string>("")
+    const AVAILABLE_TIMES = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", 
+                              "13:00", "13:30", "14:00", "14:30",
+                              "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"]
     const [currentDate, setCurrentDate] = useState<Date>(new Date())
-    const getHolidayList = () => {
-        const holidayList = []
-        for (var i = 0; i < holidayList.length; i++) {
-        }
-    } 
-
+    const [availableTimes, setAvailableTimes] = useState<string[]>(AVAILABLE_TIMES)
     const localizer = globalizeLocalizer(globalize)
     const iconClassName = "text-luxe-pink hover:bg-luxe-light hover:text-luxe-red font-thin"
 
@@ -88,7 +93,16 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     const handleUpdateEvent = (code: string) => {
 
     }
+    const displayTimeWithAMPM = (time: string) => {
+        const times = time.split(":")
+        const convertInt = Number(times[0])
+        if (convertInt > 12){
+            return `${convertInt-12}:${times[1]} PM`
+        }
+        return `${time} AM`
+    }
     const { finalAppointmentList, schedule} = useAppointment()
+
     const formik = useFormik<FormValues>({
         initialValues: {
             email: "",
@@ -96,19 +110,24 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             services: services[0]?.value || "",
             date: "",
             phone: "",
+            time: "",
         },
         onSubmit: async(values) => {
             try {
                 setIsLoading(true)
                 setIsOpen(false)
+                const finalDate = `${dayjs(values.date).format("ddd MMM DD YYYY")} ${values.time}:00 GMT+0800 (Philippine Standard Time)`
+                
                 const body:IAppointmentRequest = {
                     customer: values.name,
                     service: values.services,
-                    date: values.date
+                    date: finalDate,
+                    email: values.email
                 }
                 schedule(JSON.stringify(body))
                 setSnackBarStatus({ show: true, message: "Appointment has successfully created.", bg:BG_COLOR.success})
                 formik.resetForm()
+                setSelectedTime("")
             } catch (err) {
                 setSnackBarStatus({ show: true, message: "Error while scheduling an appointment.", bg: BG_COLOR.error})
             } finally {
@@ -119,11 +138,12 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             }
         },
         validationSchema: Yup.object().shape({
-            email: Yup.string().email("Enter valid email address.").required("Please Enter Email"),
-            name: Yup.string().required("Please enter your name"),
-            services: Yup.string().required("Please select a service"),
-            date: Yup.string().required("Please select a time"),
-            phone: Yup.string().required("Please enter your phone number")
+            email: Yup.string().email("Enter valid email address.").required("Please Enter Email."),
+            name: Yup.string().required("Please enter your name."),
+            services: Yup.string().required("Please select a service."),
+            date: Yup.string().required("Please select a date"),
+            phone: Yup.string().matches(/^9\d{9}$/, 'Enter valid phone number.'),
+            time: Yup.string().required("Please select a time.")
         })
     })
     const handleSlotSelected= (info: SlotInfo) => {
@@ -172,6 +192,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     }
     const handleClose = () => {
         formik.resetForm()
+        setSelectedTime("")
         setIsOpen(false)
     }
     const minDate = new Date();
@@ -180,6 +201,16 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         setCurrentDate(selectedDay)
         formik.setFieldValue('date', minDate.toString());
         setIsOpen(true)
+    }
+    const disablePreviousDates = (date:dayjs.Dayjs) => {
+        const today = dayjs().add(-1, 'day');
+        return date < today;
+      };
+    const handleDateChange= (value: any, selectionState?: PickerSelectionState | undefined, selectedView?: DateView | undefined) => {
+        formik.setFieldValue('date', value?.toString());
+        const takenTimes: string[] = finalAppointmentList.filter(item => dayjs(value).format("DD MM YYYY") == dayjs(item.date).format("DD MM YYYY")).map((item) => item.title)
+        const availableTimeRemaining: string[] = AVAILABLE_TIMES.filter((time: string) => !takenTimes.includes(time))
+        setAvailableTimes(availableTimeRemaining)
     }
     return(
         <div className='w-full'>
@@ -202,6 +233,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 }}
                 components={{
                     toolbar: customToolbar
+
                 }}
                 selectable={true}
                 onSelectEvent={(event:IEvent) => handleEventSelected(event)}
@@ -210,7 +242,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 min={minDate}
                 dayPropGetter={(date) => {
                     if (date <= new Date()) {
-                        if (date.getDate() == new Date().getDate()){
+                        if (date.getMonth() == new Date().getMonth() && date.getDate() == new Date().getDate()){
                             return {style: { background:"transparent"}}
                         }
                         return {style: { backgroundColor:"#D1C7BD", opacity:".5", cursor: "auto" }}
@@ -220,14 +252,12 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 }}
             />
             {
-                snackBarStatus.show && (
                 <SnackBarComponent 
                     bg={snackBarStatus.bg}
                     message={snackBarStatus.message}
                     show={snackBarStatus.show}
                     setStatus={(show) => setSnackBarStatus(s => ({ ...s, show }))}
                 />
-                )
             }
             {
             isOpen && (<Dialog
@@ -236,7 +266,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 fullWidth={true}
             >
                 <DialogTitle className="my-2 flex justify-items-center text-center text-luxe-brown text-xl font-extralight items-center">
-                    BOOK AN APPOINTMENT
+                        MEET WITH ME
                 </DialogTitle>
                 <IconButton 
                     className="text-luxe-brown"
@@ -251,20 +281,8 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 >
                     <CloseIcon />
                 </IconButton>
-                <form onSubmit={formik.handleSubmit} id="appointment" className='w-full'>
-                    <DialogContent dividers className="space-y-4">
-                        <TextField
-                            className="mt-3"
-                            fullWidth={true}
-                            id="email"
-                            name="email"
-                            label="Email"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.email && Boolean(formik.errors.email)}
-                            helperText={formik.touched.email && formik.errors.email}
-                        />
+                <form onSubmit={formik.handleSubmit} id="appointment" className='w-full overflow-auto'>
+                    <DialogContent dividers className="space-y-3 px-10">
                         <TextField
                             className="mt-3"
                             fullWidth={true}
@@ -280,6 +298,18 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                         <TextField
                             className="mt-3"
                             fullWidth={true}
+                            id="email"
+                            name="email"
+                            label="Email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                        <TextField
+                            className="mt-3"
+                            fullWidth={true}
                             id="phone"
                             name="phone"
                             label="Phone"
@@ -288,6 +318,9 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             onBlur={formik.handleBlur}
                             error={formik.touched.phone && Boolean(formik.errors.phone)}
                             helperText={formik.touched.phone && formik.errors.phone}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start">+63</InputAdornment>,
+                            }}
                         />
                       <FormControl fullWidth className="mt-3">
                         <InputLabel id="services">Service</InputLabel>
@@ -309,11 +342,11 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             ))}
                         </Select>
                         {formik.touched.services || formik.errors.services && (
-                            <span className="text-red-500">{formik.errors.services}</span>
+                            <span className="text-luxe-red">{formik.errors.services}</span>
                         )}
                         </FormControl>
 
-                        <FormControl fullWidth className="mt-3">
+                        {/* <FormControl fullWidth className="mt-3">
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
                             ampm={true}
@@ -334,8 +367,63 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                         {formik.touched.date && formik.errors.date && (
                             <span className="text-red-500">{formik.errors.date}</span>
                         )}
-                        </FormControl>
+                        </FormControl> */}
+                        <Grid container spacing={1}>
+                            <Grid item xs={12} sm>
+                                <FormControl>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DateCalendar 
+                                            shouldDisableDate={disablePreviousDates}
+                                            defaultValue={dayjs(currentDate)} 
+                                            onChange={handleDateChange}
+                                            sx={{
+                                                '.css-23p0if-MuiButtonBase-root-MuiPickersDay-root':{
+                                                    '&:hover': {
+                                                        backgroundColor: "#D1C7BD"
+                                                    }
+                                                },
+                                            '.css-1wy8uaa-MuiButtonBase-root-MuiPickersDay-root.Mui-selected':
+                                                {
+                                                backgroundColor: '#72383D',
+                                                color: '#EFE9E1', 
+                                                '&:hover': {
+                                                    backgroundColor: "#D1C7BD"
+                                                }
+                                            },
+                                            }}
+                                        />
+                                    </LocalizationProvider>
+                                    {formik.touched.date && formik.errors.date && (
+                                        <span className="text-luxe-red">{formik.errors.date}</span>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm className="d-flex justify-content-center overflow-auto">
+                                <FormControl  className={`w-4/5 py-3 h-80 d-flex justify-content-center ${formik.errors.time ? "border-luxe-red border-2" : ""}`}>
+                                    
+                                    {   formik.errors.time && (
+                                        <span className="text-luxe-red">{formik.errors.time}</span>
+                                    )}
+                                    {
+                                        !!availableTimes?.length ? availableTimes.map((time) => {
+                                            return(
+                                                <Button 
+                                                    onClick={() => {
+                                                        setSelectedTime(time)
+                                                        formik.setFieldValue('time', time);
+                                                    }}
+                                                    className={`w-full py-2 border-luxe-red border-3 hover:bg-luxe-red hover:text-luxe-light ${time === selectedTime ? "bg-luxe-red text-luxe-light" : "text-luxe-red "}`}>
+                                                    {displayTimeWithAMPM(time)}
+                                                </Button>
+                                            )
+                                        }) : <Typography>No available time today</Typography>
+                                    }
+                                </FormControl>
+                            </Grid>
+                        </Grid>
                     </DialogContent>
+                </form>
+
                     <DialogActions>
                     {
                         !isLoading && (
@@ -350,7 +438,6 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             : <CircularProgress color="secondary" />
                     }
                     </DialogActions>
-                </form>
             </Dialog>)
             }
         </div>

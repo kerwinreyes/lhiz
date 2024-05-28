@@ -4,6 +4,9 @@
 .rbc-day-bg:hover {
     cursor: pointer;
 }
+.rbc-button-link .rbc-show-more {
+    color: "#AC9C8D"
+}
 button {
     margin-left: 100px;
 }

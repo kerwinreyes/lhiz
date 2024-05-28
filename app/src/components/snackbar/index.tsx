@@ -13,7 +13,7 @@ const SnackBarComponent:React.FC<ISnackBarComponent> = (props) => {
     return (
         <Snackbar 
             open={show} 
-            autoHideDuration={6000} 
+            autoHideDuration={5000} 
             onClose={() => setStatus(false)}
             anchorOrigin={{ vertical: 'top', horizontal: 'right'}}
         >

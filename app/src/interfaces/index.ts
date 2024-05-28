@@ -22,4 +22,5 @@ export interface IAppointmentRequest {
     service: string
     customer: string
     date: string
+    email: string
 }
