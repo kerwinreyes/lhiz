@@ -1,10 +1,8 @@
-import { TransitionStatus } from "react-transition-group";
 import { useServices } from "../../hooks/services";
 import { useEffect, useState } from "react";
 import { Transition } from '@headlessui/react'
-import { Box, Button, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
@@ -23,7 +21,6 @@ const HeroSplitSlider = () => {
         
         index === 0 ? setIndex(services.length -1) : setIndex(index - 1);
     };
-    const duration:number = 500
     
     const handleScroll = (event: WheelEvent) =>{
         if (event.deltaY > 0 ){
@@ -79,7 +76,13 @@ const HeroSplitSlider = () => {
                 }
             </div>
             <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-pink">
-                {
+                { 
+                    loading ?
+                     <>
+                     <div className="w-full h-full  flex items-center align-center justify-center text-luxe-brown"
+                        ></div>
+                    </>
+                    :
                     services.map((item, i) => {
                         return (
                             <Transition

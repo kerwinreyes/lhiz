@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { ScrollControlsState, useGLTF, useScroll } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import gsap from 'gsap'
@@ -47,7 +47,7 @@ type GLTFResult = GLTF & {
   animations: any
 }
 
-type ContextType = Record<string, React.ForwardRefExoticComponent<JSX.IntrinsicElements['mesh']>>
+// type ContextType = Record<string, React.ForwardRefExoticComponent<JSX.IntrinsicElements['mesh']>>
 
 export const FLOOR_HEIGHT: number = 2.5;
 export const NB_FLOORS: number = 2;

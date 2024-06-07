@@ -31,7 +31,7 @@ export const fetchAppointments = () => {
         }
     }
 }
-export const scheduleAppointment = (body: string): AppThunk => async (dispatch, getState) => {
+export const scheduleAppointment = (body: string): AppThunk => async (dispatch) => {
     try {
         dispatch({ type: SCHEDULE_APPOINTMENT_REQUEST })
         const response = await api.post('/appointment', body)

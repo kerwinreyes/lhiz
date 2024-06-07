@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { BG_COLOR, Days } from '../../utils/constant';
+import React, { useState } from 'react';
+import { BG_COLOR } from '../../utils/constant';
 import { Button, 
          CircularProgress, 
          Dialog, 
@@ -20,8 +20,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { Calendar, 
          NavigateAction, 
          SlotInfo, 
@@ -30,7 +28,7 @@ import { Calendar,
          globalizeLocalizer} from 'react-big-calendar'
 import CloseIcon from '@mui/icons-material/Close';
 
-import { useFormik, FormikProps } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import "react-big-calendar/lib/css/react-big-calendar.css"
@@ -40,13 +38,10 @@ import moment from 'moment';
 import SnackBarComponent from '../snackbar';
 import { IAppointmentRequest } from '../../interfaces';
 import { useAppointment } from '../../hooks/appointment';
-import dayjs, { Dayjs } from 'dayjs';
-import { DateView, TimeView } from '@mui/x-date-pickers/models';
+import dayjs from 'dayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { PickerSelectionState } from '@mui/x-date-pickers/internals/hooks/usePicker/usePickerValue.types';
 
 interface ICalendar {
-    day: Date
     services: {label: string, value: string}[]
 }
 interface IEvent {
@@ -68,7 +63,7 @@ interface FormValues {
   phone: string,
 }
 const CalendarEvents:React.FC<ICalendar> = (props) => {
-    const { day, services } = props
+    const { services } = props
     const [selectedTime, setSelectedTime] = useState<string>("")
     const AVAILABLE_TIMES = ["9:00", "9:30", "10:00", "10:30", "11:00", "11:30", 
                               "13:00", "13:30", "14:00", "14:30",
@@ -83,16 +78,17 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [snackBarStatus, setSnackBarStatus] = useState<{ show: boolean, message: string, bg: string}>({ show: false, message: "", bg:""})
     
-    const handleEventSelected = (event: IEvent) => {
+    const handleEventSelected = () => {
         setIsOpen(true)
         
     }
-    const handleCancelAppointment = () => {
+    //This section is on under development
+    // const handleCancelAppointment = () => {
 
-    }
-    const handleUpdateEvent = (code: string) => {
+    // }
+    // const handleUpdateEvent = (code: string) => {
 
-    }
+    // }
     const displayTimeWithAMPM = (time: string) => {
         const times = time.split(":")
         const convertInt = Number(times[0])
@@ -206,7 +202,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         const today = dayjs().add(-1, 'day');
         return date < today;
       };
-    const handleDateChange= (value: any, selectionState?: PickerSelectionState | undefined, selectedView?: DateView | undefined) => {
+    const handleDateChange= (value: any) => {
         formik.setFieldValue('date', value?.toString());
         const takenTimes: string[] = finalAppointmentList.filter(item => dayjs(value).format("DD MM YYYY") == dayjs(item.date).format("DD MM YYYY")).map((item) => item.title)
         const availableTimeRemaining: string[] = AVAILABLE_TIMES.filter((time: string) => !takenTimes.includes(time))
@@ -225,7 +221,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 views={["month", "week"]}
                 defaultDate={moment().toDate()}
                 defaultView='month'
-                eventPropGetter={(event) => {
+                eventPropGetter={(event: IEvent) => {
                     const eventData = finalAppointmentList.find(ot => ot.id === event.id)
                     const backgroundColor = eventData && eventData.color
                     return {style: { backgroundColor,}}
@@ -236,7 +232,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
 
                 }}
                 selectable={true}
-                onSelectEvent={(event:IEvent) => handleEventSelected(event)}
+                onSelectEvent={() => handleEventSelected()}
                 onSelectSlot={(info) => handleSlotSelected(info)}
                 timeslots={5}
                 min={minDate}

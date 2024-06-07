@@ -2,7 +2,6 @@ import { OrbitControls, ScrollControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import SewingMachineModel from "../models/sewing-machine";
 import Overlay from "../overlay";
-import { useState } from "react";
 const Box = () => {
     return (
             <>

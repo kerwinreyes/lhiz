@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { FETCH_SERVICES_FAILED, FETCH_SERVICES_REQUEST, FETCH_SERVICES_SUCCESS, ServicesActionTypes } from './types'
 import { IService } from '../../interfaces'
 import api from '../../utils/api'

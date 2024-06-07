@@ -1,6 +1,5 @@
-import React from 'react';
 import VectorPortrait from '../../../public/img/vectorPortfolio.jpg'
-import { Avatar, Grid, Box, Typography } from '@mui/material';
+import {  Grid } from '@mui/material';
 import TransitionFade from '../../components/transition';
 const About = () => {
     const aboutMe = "Eliza Dungao, the name itself whispers of meticulous stitches and fabrics that drape like dreams.  As a dressmaker, your hands weave more than just thread; they weave stories.  Every dress that emerges from your care tells a tale, a whispered secret of the woman who will inhabit it.  Whether it's a garment for a joyous celebration or a quiet expression of personal style, your touch imbues it with a touch of magic, transforming mere cloth into something that speaks to the soul."

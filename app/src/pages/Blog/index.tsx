@@ -1,5 +1,3 @@
-import { Typography } from '@mui/material';
-import React from 'react';
 import TransitionFade from '../../components/transition';
 
 const Blog = () => {

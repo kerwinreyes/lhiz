@@ -1,4 +1,3 @@
-import { Button } from "@mui/material"
 import { Scroll, ScrollControlsState, useScroll } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { useState } from "react"
