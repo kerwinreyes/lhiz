@@ -52,7 +52,7 @@ interface IEvent {
     start: Date,
     end: Date,
     allDay?: boolean
-    resource?: any,
+    resource?: string,
 }
 interface FormValues {
   email: string,
@@ -61,6 +61,16 @@ interface FormValues {
   date: string,
   time: string,
   phone: string,
+}
+interface IAppointment {
+        id: string;
+        date: string;
+        color: string;
+        title: string;
+        service: string;
+        start: Date;
+        end: Date;
+        allDay: boolean;
 }
 const CalendarEvents:React.FC<ICalendar> = (props) => {
     const { services } = props
@@ -108,7 +118,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             phone: "",
             time: "",
         },
-        onSubmit: async(values) => {
+        onSubmit: async(values: FormValues) => {
             try {
                 setIsLoading(true)
                 setIsOpen(false)
@@ -202,9 +212,9 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         const today = dayjs().add(-1, 'day');
         return date < today;
       };
-    const handleDateChange= (value: any) => {
+    const handleDateChange= (value: Date) => {
         formik.setFieldValue('date', value?.toString());
-        const takenTimes: string[] = finalAppointmentList.filter(item => dayjs(value).format("DD MM YYYY") == dayjs(item.date).format("DD MM YYYY")).map((item) => item.title)
+        const takenTimes: string[] = finalAppointmentList.filter((item: IAppointment) => dayjs(value).format("DD MM YYYY") == dayjs(item.date).format("DD MM YYYY")).map((item: IAppointment) => item.title)
         const availableTimeRemaining: string[] = AVAILABLE_TIMES.filter((time: string) => !takenTimes.includes(time))
         setAvailableTimes(availableTimeRemaining)
     }
@@ -222,7 +232,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 defaultDate={moment().toDate()}
                 defaultView='month'
                 eventPropGetter={(event: IEvent) => {
-                    const eventData = finalAppointmentList.find(ot => ot.id === event.id)
+                    const eventData = finalAppointmentList.find((ot:IAppointment) => ot.id === event.id)
                     const backgroundColor = eventData && eventData.color
                     return {style: { backgroundColor,}}
 
@@ -233,10 +243,10 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                 }}
                 selectable={true}
                 onSelectEvent={() => handleEventSelected()}
-                onSelectSlot={(info) => handleSlotSelected(info)}
+                onSelectSlot={(info:SlotInfo) => handleSlotSelected(info)}
                 timeslots={5}
                 min={minDate}
-                dayPropGetter={(date) => {
+                dayPropGetter={(date: Date) => {
                     if (date <= new Date()) {
                         if (date.getMonth() == new Date().getMonth() && date.getDate() == new Date().getDate()){
                             return {style: { background:"transparent"}}

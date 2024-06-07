@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import { IAppointmentResponse } from "../../interfaces";
+import { IAppointmentResponse, IService } from "../../interfaces";
 import { AppointmentActionTypes, FETCH_APPOINTMENT_FAILED, FETCH_APPOINTMENT_REQUEST, FETCH_APPOINTMENT_SUCCESS, SCHEDULE_APPOINTMENT_REQUEST, SCHEDULE_APPOINTMENT_SUCCESS } from "./types";
 import api from '../../utils/api'
 import { AppThunk } from "../store";

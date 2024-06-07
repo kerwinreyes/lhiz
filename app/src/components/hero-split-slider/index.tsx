@@ -7,6 +7,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 import "./style.scss";
+import { IService } from "../../interfaces";
 const HeroSplitSlider = () => {
     const {services , loading} = useServices()
 
@@ -52,7 +53,7 @@ const HeroSplitSlider = () => {
         <div className="flex justify-between items-center h-screen w-full">
             <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-red">
                 {
-                    services.map((item, i) => {
+                    services.map((item: IService, i:number) => {
                         return (
                             <Transition
                                 show={i===index}
@@ -83,7 +84,7 @@ const HeroSplitSlider = () => {
                         ></div>
                     </>
                     :
-                    services.map((item, i) => {
+                    services.map((item: IService, i: number) => {
                         return (
                             <Transition
                                 show={i ===index}
