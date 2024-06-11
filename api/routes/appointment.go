@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/smtp"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -102,7 +101,8 @@ func AddAppointment(c *gin.Context) {
 		return
 	}
 
-	err := godotenv.Load(filepath.Join(os.Getenv("APP_PATH"), ".env"))
+	err := godotenv.Load()
+	// err := godotenv.Load(filepath.Join(os.Getenv("APP_PATH"), ".env"))
 
 	if err != nil {
 		msg := fmt.Sprintf("Error loading .env file")

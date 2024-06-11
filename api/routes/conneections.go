@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -13,12 +12,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-//DBinstance func
+// DBinstance func
 func DBinstance() *mongo.Client {
-	
-	err := godotenv.Load(filepath.Join(os.Getenv("APP_PATH"), ".env"))
-	// err = godotenv.Load("/.env")
 
+	err := godotenv.Load()
+	// err := godotenv.Load(filepath.Join(os.Getenv("APP_PATH"), ".env"))
+	// err = godotenv.Load("/.env")
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -47,7 +46,7 @@ func DBinstance() *mongo.Client {
 
 var Client *mongo.Client = DBinstance()
 
-//OpenCollection is a  function makes a connection with a collection in the database
+// OpenCollection is a  function makes a connection with a collection in the database
 func OpenCollection(client *mongo.Client, collectionName string) *mongo.Collection {
 
 	var collection *mongo.Collection = client.Database("dress_making").Collection(collectionName)

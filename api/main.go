@@ -5,10 +5,22 @@ import (
 
 	"api/routes"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	}
+}
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -18,7 +30,8 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	router.Use(cors.Default())
+	// router.Use(cors.Default())
+	router.Use(CORSMiddleware())
 	//Appointment
 	router.POST("/appointment", routes.AddAppointment)
 	router.GET("/appointments", routes.GetAppointments)
