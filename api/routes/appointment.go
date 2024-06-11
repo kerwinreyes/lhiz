@@ -101,7 +101,7 @@ func AddAppointment(c *gin.Context) {
 		return
 	}
 
-	err := godotenv.Load()
+	err := godotenv.Load("api/.env")
 	// err := godotenv.Load(filepath.Join(os.Getenv("APP_PATH"), ".env"))
 
 	if err != nil {

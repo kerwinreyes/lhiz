@@ -15,7 +15,7 @@ import (
 // DBinstance func
 func DBinstance() *mongo.Client {
 
-	err := godotenv.Load()
+	err := godotenv.Load("api/.env")
 	// err := godotenv.Load(filepath.Join(os.Getenv("APP_PATH"), ".env"))
 	// err = godotenv.Load("/.env")
 
