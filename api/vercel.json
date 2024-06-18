@@ -1,29 +1,17 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "main.go",
-      "use": "@vercel/go"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/main"
-    }
-  ],
-  "env": {
-    "PORT": "5000" 
-  },
   "functions": {
     "api/main.go": {
       "runtime": "@vercel/go"
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/main"
+      "src": "/(.*)",
+      "dest": "/api/main"
     }
-  ]
+  ],
+  "env": {
+    "PORT": "5000"
+  }
 }
