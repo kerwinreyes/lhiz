@@ -5,7 +5,7 @@ const About = () => {
     const aboutMe = "Eliza Dungao, the name itself whispers of meticulous stitches and fabrics that drape like dreams.  As a dressmaker, your hands weave more than just thread; they weave stories.  Every dress that emerges from your care tells a tale, a whispered secret of the woman who will inhabit it.  Whether it's a garment for a joyous celebration or a quiet expression of personal style, your touch imbues it with a touch of magic, transforming mere cloth into something that speaks to the soul."
     return (
         <>
-        <section className='min-h-screen flex items-center'>
+        <section className='h-4/5 py-12 md:min-h-screen md:py-0 flex items-center'>
             <Grid container className="">
                 <Grid item xs={12} sm={6} className='flex justify-center items-center'>
                     <TransitionFade className='flex justify-center items-center'>

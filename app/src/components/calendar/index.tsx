@@ -219,8 +219,8 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         setAvailableTimes(availableTimeRemaining)
     }
     return(
-        <div className='w-full'>
-            <div className="w-full flex justify-end pr-5">
+        <div className='pt-10 w-full'>
+            <div className="pt-10 w-full flex justify-end pr-5">
                 <Button onClick={handleBookAppointment} className="rounded-xl px-6 text-luxe-light bg-luxe-brown hover:bg-luxe-light hover:text-luxe-red hover:shadow-lg">Book an appointment</Button>
             </div>
             <Calendar
@@ -288,7 +288,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                     <CloseIcon />
                 </IconButton>
                 <form onSubmit={formik.handleSubmit} id="appointment" className='w-full overflow-auto'>
-                    <DialogContent dividers className="space-y-3 px-10">
+                    <DialogContent dividers className="space-y-3 md:px-10">
                         <TextField
                             className="mt-3"
                             fullWidth={true}
@@ -374,8 +374,14 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             <span className="text-red-500">{formik.errors.date}</span>
                         )}
                         </FormControl> */}
-                        <Grid container spacing={1}>
-                            <Grid item xs={12} sm>
+                        <Grid container spacing={1} >
+                            <Grid item xs={12} sm="auto" sx={{
+                                '& .MuiGrid-root > .MuiGrid-item': {
+                                    // Apply your styles here
+                                    paddingLeft: 0,  // Example: Setting padding-left to 0
+                                    // Add more styles as needed
+                                },
+                                }}>
                                 <FormControl>
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DateCalendar 
@@ -383,19 +389,28 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                                             defaultValue={dayjs(currentDate)} 
                                             onChange={handleDateChange}
                                             sx={{
-                                                '.css-23p0if-MuiButtonBase-root-MuiPickersDay-root':{
+                                                'css-rt8n42-MuiDateCalendar-root':{
+                                                    width: "100%"
+                                                },
+                                                '& .MuiDateCalendar-root':{
+                                                    width: "100%"
+                                                },
+                                                '& .MuiPickersCalendar-root':{
+                                                    width: "100%"
+                                                },
+                                                '& .MuiPickersDay-root':{
                                                     '&:hover': {
                                                         backgroundColor: "#D1C7BD"
                                                     }
                                                 },
-                                            '.css-1wy8uaa-MuiButtonBase-root-MuiPickersDay-root.Mui-selected':
-                                                {
-                                                backgroundColor: '#72383D',
-                                                color: '#EFE9E1', 
-                                                '&:hover': {
-                                                    backgroundColor: "#D1C7BD"
-                                                }
-                                            },
+                                                '& .MuiPickersDay-root.Mui-selected':
+                                                    {
+                                                    backgroundColor: '#72383D',
+                                                    color: '#EFE9E1', 
+                                                    '&:hover': {
+                                                        backgroundColor: "#D1C7BD"
+                                                    }
+                                                },
                                             }}
                                         />
                                     </LocalizationProvider>
@@ -404,7 +419,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                                     )}
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={12} sm className="d-flex justify-content-center overflow-auto">
+                            <Grid item xs={12} sm="auto" className="d-flex justify-content-center overflow-auto">
                                 <FormControl  className={`w-4/5 py-3 h-80 d-flex justify-content-center ${formik.errors.time ? "border-luxe-red border-2" : ""}`}>
                                     
                                     {   formik.errors.time && (

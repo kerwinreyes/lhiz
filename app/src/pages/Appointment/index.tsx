@@ -8,7 +8,7 @@ const Appointment = () => {
     } = useServices()
     
     return (
-        <div className="p-10 h-screen w-screen">
+        <div className="h-4/5 md:h-screen w-screen">
             <CalendarEvents  
                 services={services.map((item: IService) => {return {label: item.name, value: item.slug}})} />
         </div>

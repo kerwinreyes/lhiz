@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const Header = () => {
     const [ showNav, setShowNme] = useState<boolean>(false)
-    const linkClassName = "relative w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-luxe-nude after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left text-sm font-light text-white md:bg-transparent md:text-white md:hover:text-white text-black "
+    const linkClassName = "relative w-fit block after:block after:content-[''] after:absolute after:h-[3px] after:bg-luxe-nude after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left text-sm font-light md:bg-transparent md:text-white md:hover:text-white text-black "
     return (
         <>
         <nav className='absolute w-full z-20'>
