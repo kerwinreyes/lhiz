@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"api/routes"
@@ -50,7 +51,9 @@ func main() {
 	router.POST("/service", routes.AddService)
 	router.DELETE("/service/:id", routes.DeleteService)
 	// router.GET("/appointment/:id", routes.GetAppointments)
-
+	router.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Running")
+	})
 	router.Run(":" + port)
 
 }
