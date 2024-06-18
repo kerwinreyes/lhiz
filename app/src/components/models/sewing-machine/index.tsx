@@ -1,10 +1,19 @@
 import * as THREE from 'three'
-import { useLayoutEffect, useRef } from 'react'
-import { ScrollControlsState, useGLTF, useScroll } from '@react-three/drei'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Html, ScrollControlsState, useGLTF, useScroll } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import gsap from 'gsap'
-import { useFrame } from '@react-three/fiber'
+import { GroupProps, useFrame } from '@react-three/fiber'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import TransitionFade from '../../transition'
 
+interface IuseGLTFWithProgress {
+  model: any
+  progress: number
+}
+interface IModel  extends GroupProps{
+  setIsLoading: (loading:boolean) => void
+}
 type GLTFResult = GLTF & {
   nodes: {
     ['01_office001_1']: THREE.Mesh
@@ -51,9 +60,39 @@ type GLTFResult = GLTF & {
 
 export const FLOOR_HEIGHT: number = 2.5;
 export const NB_FLOORS: number = 2;
+const useGLTFWithProgress = (url: string): IuseGLTFWithProgress => {
+  const [model, setModel] = useState<any>(null);
+  const [progress, setProgress] = useState<number>(0);
 
-const SewingMachineModel = (props: JSX.IntrinsicElements['group']) => {
+  useEffect(() => {
+    const loader = new GLTFLoader();
+    loader.load(
+      url,
+      (gltf) => {
+        setModel(gltf);
+      },
+      (xhr: ProgressEvent<EventTarget>) => {
+        if (xhr.lengthComputable) {
+          const percentComplete = (xhr.loaded / xhr.total) * 100;
+          setProgress(percentComplete);
+        }
+      },
+      (error) => {
+        console.error('An error happened', error);
+      }
+    );
+  }, [url]);
+  const result: IuseGLTFWithProgress = {
+    model,
+    progress
+  }
+  return result
+};
 
+const SewingMachineModel:React.FC<IModel> = (props) => {
+  const { setIsLoading} = props
+  const { model, progress } = useGLTFWithProgress('./models/office.glb');
+  
   const { nodes, materials } = useGLTF('./models/office.glb') as GLTFResult;
   const ref:any = useRef()
   const tl:any = useRef()
@@ -61,10 +100,11 @@ const SewingMachineModel = (props: JSX.IntrinsicElements['group']) => {
   const secondFloor:any = useRef()
   const scroll:ScrollControlsState = useScroll()
 
-  useFrame(() => {
+  useFrame(() => {  
     tl.current.seek(scroll.offset * tl.current.duration())
   });
   useLayoutEffect(() => {
+    if (model) {
     tl.current = gsap?.timeline()
 
     //Vertical
@@ -121,12 +161,35 @@ const SewingMachineModel = (props: JSX.IntrinsicElements['group']) => {
       secondFloor.current.rotation,
       {
         duration: 0.5,
-        y: -Math.PI/2,
+        y: -Math.PI/2,  
       },
       0,
     );
-    
-  }, [])
+  }
+  }, [model])
+  useEffect(() => {
+    if(!model){
+      setIsLoading(true)
+    } else {
+      setIsLoading(false)
+    }
+  }, [model])
+  if (!model) {
+    return (
+      <Html center>
+        <div className="flex justify-center items-center w-screen h-screen">
+          <TransitionFade className='flex justify-center items-center'>
+            <div>
+              <img src="https://i.ibb.co/7vmGJHs/Sewing-Machinge-Small.gif" alt="Sewing Machine" 
+                className="w-64 md:w-96 mb-4 mx-auto object-contain"
+                style={{ objectFit: 'contain' }}/>
+            <p className="text-lg md:text-xl font-semibold">Loading...</p>
+            </div>
+          </TransitionFade>
+        </div>
+      </Html>
+    );
+  }
   return (
         <group {...props} dispose={null} ref={ref}>
           <group position={[0, -1.019, 1.255]}>
