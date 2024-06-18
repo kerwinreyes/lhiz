@@ -91,7 +91,7 @@ const useGLTFWithProgress = (url: string): IuseGLTFWithProgress => {
 
 const SewingMachineModel:React.FC<IModel> = (props) => {
   const { setIsLoading} = props
-  const { model, progress } = useGLTFWithProgress('./models/office.glb');
+  const { model } = useGLTFWithProgress('./models/office.glb');
   
   const { nodes, materials } = useGLTF('./models/office.glb') as GLTFResult;
   const ref:any = useRef()
