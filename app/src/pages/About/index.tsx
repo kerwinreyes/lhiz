@@ -2,7 +2,7 @@ import VectorPortrait from '../../../public/img/vectorPortfolio.jpg'
 import {  Grid } from '@mui/material';
 import TransitionFade from '../../components/transition';
 const About = () => {
-    const aboutMe = "Almost 30 years ago, I discovered the magic of transforming fabric into something beautiful. It all started with a childhood sewing project and blossomed into a passion for creating clothes that make people feel amazing. From crafting a dream gown to tailoring that perfect suit, I love collaborating with clients to bring their unique style to life. My experience has given me a keen eye for detail and a deep understanding of how clothes flatter different figures. But the real reward? Seeing the joy on someone's face when they slip into something that makes them feel confident and truly themselves.  Let's work together to create that feeling for you!"
+    const aboutMe = "Sewing has been my love story for a long time! It all started with a childhood project that sparked a passion. For 6 years, I shared that passion by teaching others the magic of turning fabric into something beautiful. Seeing students light up when they learned something new was amazing, but I also had a dream of creating clothes myself. So, I took the leap and became a dressmaker! Now, I get to combine my teaching skills with my love of fashion to help people find clothes that make them feel incredible. Whether it's a dream gown or a perfect-fitting suit, I love working with people to bring their unique style to life. The best part? Seeing the smile on someone's face when they feel confident and truly themselves in what they're wearing. Let's create that feeling for you!"
 
     return (
         <>

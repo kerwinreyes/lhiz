@@ -20,12 +20,12 @@ const Box = () => {
     )
 }
 const SewingMachine = () => {
-
+    
     return (
         <>
             <Canvas camera={{
-                fov:64,
-                position: [2.5, 1, 2.5]
+                fov:window.innerWidth <= 450 ? 40 : 64,
+                position: window.innerWidth <= 450 ? [8.5, 2, 5] : [2.5, 1, 2.5],
             }}>
                 <Box />
             </Canvas>
