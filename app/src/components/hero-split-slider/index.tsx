@@ -1,7 +1,7 @@
 import { useServices } from "../../hooks/services";
 import { useEffect, useState } from "react";
 import { Transition } from '@headlessui/react'
-import { Button, Typography } from "@mui/material";
+import { Button, Skeleton, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -60,15 +60,17 @@ const HeroSplitSlider = () => {
     }, [index])
     return (
         <>
-        <div className="z-10 absolute bottom-5 right-5">
-            <div>
-                <ArrowUpwardIcon onClick={prevSlide} className=" text-5xl text-luxe-red hover:cursor-pointer hover:text-luxe-brown" />
+        {
+            !loading &&
+            <div className="z-10 absolute bottom-5 right-5">
+                <div>
+                    <ArrowUpwardIcon onClick={prevSlide} className=" text-5xl text-luxe-red hover:cursor-pointer hover:text-luxe-brown" />
+                </div>
+                <div>
+                    <ArrowDownwardIcon onClick={nextSlide} className=" text-5xl text-luxe-red hover:cursor-pointer hover:text-luxe-brown"/>
+                </div>
             </div>
-            <div>
-                <ArrowDownwardIcon onClick={nextSlide} className=" text-5xl text-luxe-red hover:cursor-pointer hover:text-luxe-brown"/>
-            </div>
-
-        </div>
+        }
         <div className="md:flex justify-between items-center h-screen w-full">
             <div className=" w-full md:w-3/6 h-3/6 md:h-screen relative overflow-hidden bg-luxe-red">
                 {
@@ -87,7 +89,11 @@ const HeroSplitSlider = () => {
                                     className="absolute w-full h-full flex items-center justify-center bg-luxe-red text-white"
                                 >
                                     <div className="image-layout">
-                                        <img src={item.image} className="object-cover h-72 w-72 " />
+                                        {loading ? (
+                                            <Skeleton className="h-72 w-72 " animation="wave" variant="rectangular" />
+                                        ) :
+                                        <img src={item.image} className="object-cover h-72 w-72 md:h-96 md:w-96 " />
+                                        }
                                     </div>
                                 </div>
                             </Transition>
@@ -97,12 +103,7 @@ const HeroSplitSlider = () => {
             </div>
             <div className="w-full md:w-3/6 h-3/6 md:h-screen  relative overflow-hidden bg-luxe-pink">
                 { 
-                    loading ?
-                     <>
-                     <div className="w-full h-full  flex items-center align-center justify-center text-luxe-brown"
-                        ></div>
-                    </>
-                    :
+                    
                     services.map((item: IService, i: number) => {
                         return (
                             <Transition
@@ -120,18 +121,27 @@ const HeroSplitSlider = () => {
                                     <div className="text-left w-3/5">
                                         <div className="">
                                         <Typography variant="h4">
-                                            {item.name}
+                                            { loading ? <Skeleton animation="wave" className="h-20" /> : item.name}
                                         </Typography>
                                         <Typography className="mt-5 mb-10">
-                                            {item.description || "this is the dress you"}
+                                        { loading ? 
+                                        <>
+                                        <Skeleton animation="wave" className="h-12"  /> 
+                                        <Skeleton animation="wave" className="h-12"  /> 
+                                        <Skeleton animation="wave" className="h-12"  /> 
+                                        </>
+                                        : item.description || "this is the dress you"}
                                         </Typography>
-                                        <Button 
-                                            className="py-3 px-5 bg-luxe-brown hover:bg-luxe-red text-luxe-light text-xs" 
-                                            onClick={navigateToAppointment} 
-                                            disableElevation
-                                        >
-                                            Book an appointment
-                                        </Button>
+                                        { 
+                                            !loading &&
+                                            <Button 
+                                                className="py-3 px-5 bg-luxe-brown hover:bg-luxe-red text-luxe-light text-xs" 
+                                                onClick={navigateToAppointment} 
+                                                disableElevation
+                                            >
+                                                Book an appointment
+                                            </Button>
+                                        }
                                         </div>
                                     </div>
 

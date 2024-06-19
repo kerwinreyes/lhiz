@@ -2,19 +2,20 @@ import VectorPortrait from '../../../public/img/vectorPortfolio.jpg'
 import {  Grid } from '@mui/material';
 import TransitionFade from '../../components/transition';
 const About = () => {
-    const aboutMe = "Eliza Dungao, the name itself whispers of meticulous stitches and fabrics that drape like dreams.  As a dressmaker, your hands weave more than just thread; they weave stories.  Every dress that emerges from your care tells a tale, a whispered secret of the woman who will inhabit it.  Whether it's a garment for a joyous celebration or a quiet expression of personal style, your touch imbues it with a touch of magic, transforming mere cloth into something that speaks to the soul."
+    const aboutMe = "Almost 30 years ago, I discovered the magic of transforming fabric into something beautiful. It all started with a childhood sewing project and blossomed into a passion for creating clothes that make people feel amazing. From crafting a dream gown to tailoring that perfect suit, I love collaborating with clients to bring their unique style to life. My experience has given me a keen eye for detail and a deep understanding of how clothes flatter different figures. But the real reward? Seeing the joy on someone's face when they slip into something that makes them feel confident and truly themselves.  Let's work together to create that feeling for you!"
+
     return (
         <>
-        <section className='h-4/5 py-12 md:min-h-screen md:py-0 flex items-center'>
+        <section className='py-12 md:h-screen md:py-0 flex items-center'>
             <Grid container className="">
                 <Grid item xs={12} sm={6} className='flex justify-center items-center'>
                     <TransitionFade className='flex justify-center items-center'>
                     <div className="absolute border-4 border-luxe-blue h-2/5 w-2/5"></div>
-                    <img src={VectorPortrait} className='pt-10 z-10 object-fit h-auto w-3/4' />
+                    <img src={VectorPortrait} className='py-10 z-10 object-fit h-auto w-3/4' />
                     </TransitionFade>
                 </Grid>
                 <Grid item xs={12} sm={6} className='w-full flex justify-center items-center'>
-                    <TransitionFade className='w-3/4 text-left font-light text-xl'>
+                    <TransitionFade className='w-full px-5 md:px-0 md:w-4/5 text-left font-light text-xl'>
                         {aboutMe}
                     </TransitionFade>
                 </Grid>

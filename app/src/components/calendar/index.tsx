@@ -14,7 +14,7 @@ import { Button,
          MenuItem, 
          Select, 
          TextField,
-         Typography, 
+         Typography,
         } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -220,7 +220,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     }
     return(
         <div className='pt-10 w-full'>
-            <div className="pt-10 w-full flex justify-end pr-5">
+            <div className="pt-10 md:pt-0 w-full flex justify-end pr-5">
                 <Button onClick={handleBookAppointment} className="rounded-xl px-6 text-luxe-light bg-luxe-brown hover:bg-luxe-light hover:text-luxe-red hover:shadow-lg">Book an appointment</Button>
             </div>
             <Calendar
@@ -375,10 +375,11 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                         )}
                         </FormControl> */}
                         <Grid container spacing={1} >
-                            <Grid item xs={12} sm="auto" sx={{
-                                '& .MuiGrid-root > .MuiGrid-item': {
+                            <Grid item xs={12} sm={7} sx={{
+                                '& .MuiGrid-root .MuiGrid-item': {
+                                    // "& .MuiGrid-grid-xs-12": {
                                     // Apply your styles here
-                                    paddingLeft: 0,  // Example: Setting padding-left to 0
+                                    paddingLeft: "0 !important",  // Example: Setting padding-left to 0
                                     // Add more styles as needed
                                 },
                                 }}>
@@ -389,14 +390,14 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                                             defaultValue={dayjs(currentDate)} 
                                             onChange={handleDateChange}
                                             sx={{
-                                                'css-rt8n42-MuiDateCalendar-root':{
-                                                    width: "100%"
-                                                },
                                                 '& .MuiDateCalendar-root':{
-                                                    width: "100%"
+                                                    width: "100% !important"
                                                 },
-                                                '& .MuiPickersCalendar-root':{
-                                                    width: "100%"
+                                                '&.MuiDateCalendar-root':{
+                                                    width: "100% !important"
+                                                },
+                                                '&.MuiPickersCalendar-root':{
+                                                    width: "100% !important"
                                                 },
                                                 '& .MuiPickersDay-root':{
                                                     '&:hover': {
@@ -419,11 +420,11 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                                     )}
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={12} sm="auto" className="d-flex justify-content-center overflow-auto">
-                                <FormControl  className={`w-4/5 py-3 h-80 d-flex justify-content-center ${formik.errors.time ? "border-luxe-red border-2" : ""}`}>
+                            <Grid item xs={12} sm={5} className="d-flex justify-content-center overflow-auto">
+                                <FormControl  className={` w-full py-3 h-80 d-flex justify-content-center ${formik.errors.time ? "border-luxe-red border-2" : ""}`}>
                                     
                                     {   formik.errors.time && (
-                                        <span className="text-luxe-red">{formik.errors.time}</span>
+                                        <span className="text-luxe-red text-center">{formik.errors.time}</span>
                                     )}
                                     {
                                         !!availableTimes?.length ? availableTimes.map((time) => {
