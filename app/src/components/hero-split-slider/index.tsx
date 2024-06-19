@@ -12,6 +12,7 @@ const HeroSplitSlider = () => {
     const {services , loading} = useServices()
 
     const [index, setIndex] = useState(0);
+    const [touchStartY, setTouchStartY] = useState<number>(0);
     
     const navigate = useNavigate();
     const nextSlide = () => {
@@ -30,14 +31,32 @@ const HeroSplitSlider = () => {
             prevSlide()
         }
     }
+    const handleTouchStart = (event: TouchEvent) => {
+        setTouchStartY(event.touches[0].clientY)
+    }
+    const handleTouchMove = (event: TouchEvent) => {
+        event.preventDefault();
+        const touchEndY = event.touches[0].clientY;
+
+        if (touchStartY - touchEndY > 30) {
+            nextSlide();
+        } else {
+            prevSlide()
+        }
+    }
     const navigateToAppointment = () => {
         navigate("/appointment")
     }
     useEffect(() => {
-        window.addEventListener('wheel', handleScroll)
+        window.addEventListener('wheel', handleScroll);
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchmove', handleTouchMove);
+
         return () => {
-            window.removeEventListener('wheel', handleScroll)
-        }
+            window.removeEventListener('wheel', handleScroll);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+        };
     }, [index])
     return (
         <>
@@ -50,8 +69,8 @@ const HeroSplitSlider = () => {
             </div>
 
         </div>
-        <div className="flex justify-between items-center h-screen w-full">
-            <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-red">
+        <div className="md:flex justify-between items-center h-screen w-full">
+            <div className=" w-full md:w-3/6 h-3/6 md:h-screen relative overflow-hidden bg-luxe-red">
                 {
                     services.map((item: IService, i:number) => {
                         return (
@@ -68,7 +87,7 @@ const HeroSplitSlider = () => {
                                     className="absolute w-full h-full flex items-center justify-center bg-luxe-red text-white"
                                 >
                                     <div className="image-layout">
-                                        <img src={item.image} className="object-fit h-72 w-72 " />
+                                        <img src={item.image} className="object-cover h-72 w-72 " />
                                     </div>
                                 </div>
                             </Transition>
@@ -76,7 +95,7 @@ const HeroSplitSlider = () => {
                     })
                 }
             </div>
-            <div className="w-3/6 h-screen relative overflow-hidden bg-luxe-pink">
+            <div className="w-full md:w-3/6 h-3/6 md:h-screen  relative overflow-hidden bg-luxe-pink">
                 { 
                     loading ?
                      <>
