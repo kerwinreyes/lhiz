@@ -8,6 +8,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 import "./style.scss";
 import { IService } from "../../interfaces";
+import AdvanceImage from "../cdn";
 const HeroSplitSlider = () => {
     const {services , loading} = useServices()
 
@@ -86,13 +87,23 @@ const HeroSplitSlider = () => {
                                 leaveTo="opacity-0 -translate-y-12"
                             >
                                 <div
+                                    key={i}
                                     className="absolute w-full h-full flex items-center justify-center bg-luxe-red text-white"
                                 >
                                     <div className="image-layout">
                                         {loading ? (
-                                            <Skeleton className="h-72 w-72 " animation="wave" variant="rectangular" />
+                                            <Skeleton className="h-72 w-72 md:h-96 md:w-96 " animation="wave" variant="rectangular" />
                                         ) :
-                                        <img src={item.image} className="object-cover h-72 w-72 md:h-96 md:w-96 " />
+
+                                        // <div className="h-72 w-72 md:h-96 md:w-96">
+                                        <AdvanceImage
+                                            name={item.image}
+                                            size={window.innerWidth <= 650 ? 200 : 400}
+                                            key={i}
+                                        />
+                                        // </div>
+
+                                        // <img src={item.image} className="object-cover h-72 w-72 md:h-96 md:w-96 " />
                                         }
                                     </div>
                                 </div>

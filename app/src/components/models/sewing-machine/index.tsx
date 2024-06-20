@@ -6,6 +6,7 @@ import gsap from 'gsap'
 import { GroupProps, useFrame } from '@react-three/fiber'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import TransitionFade from '../../transition'
+import AdvanceImage from '../../cdn'
 
 interface IuseGLTFWithProgress {
   model: any
@@ -179,10 +180,14 @@ const SewingMachineModel:React.FC<IModel> = (props) => {
       <Html center>
         <div className="flex justify-center items-center w-screen h-screen">
           <TransitionFade className='flex justify-center items-center'>
-            <div>
-              <img src="https://i.ibb.co/7vmGJHs/Sewing-Machinge-Small.gif" alt="Sewing Machine" 
+            <div className="w-64 md:w-96 mb-4 mx-auto">
+              <AdvanceImage 
+                name="SewingMachinge_qj54ck"
+                size={350}
+              />
+              {/* <img src="https://i.ibb.co/7vmGJHs/Sewing-Machinge-Small.gif" alt="Sewing Machine" 
                 className="w-64 md:w-96 mb-4 mx-auto object-contain"
-                style={{ objectFit: 'contain' }}/>
+                style={{ objectFit: 'contain' }}/> */}
             <p className="text-lg md:text-xl font-semibold">Loading...</p>
             </div>
           </TransitionFade>
