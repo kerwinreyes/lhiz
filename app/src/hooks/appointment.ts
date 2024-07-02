@@ -13,6 +13,8 @@ dayjs.extend(timezone);
 export const useAppointment = () => {
     const dispatch = useDispatch<AppDispatch>()
     const appointments = useSelector((state: RootState) => state.appointment?.appointment)
+    const isScheduling = useSelector((state: RootState) => state.appointment?.scheduling)
+    const appointmentError = useSelector((state: RootState) => state.appointment?.error)
     
     useEffect(() => {
         dispatch(fetchAppointments())
@@ -41,5 +43,5 @@ export const useAppointment = () => {
             allDay:false
         }
     }) : []
-    return {finalAppointmentList, schedule}
+    return {finalAppointmentList, schedule, isScheduling, appointmentError}
 }

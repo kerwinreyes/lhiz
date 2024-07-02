@@ -40,7 +40,8 @@ import { IAppointmentRequest } from '../../interfaces';
 import { useAppointment } from '../../hooks/appointment';
 import dayjs from 'dayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-
+import ReCAPTCHA from 'react-google-recaptcha';
+import useReCaptcha from '../../hooks/recaptcha';
 interface ICalendar {
     services: {label: string, value: string}[]
 }
@@ -107,8 +108,8 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         }
         return `${time} AM`
     }
-    const { finalAppointmentList, schedule} = useAppointment()
-
+    const { finalAppointmentList, schedule, appointmentError} = useAppointment()
+    const { captchaToken, recaptchaRef, handleReCAPTCHA } = useReCaptcha()
     const formik = useFormik<FormValues>({
         initialValues: {
             email: "",
@@ -120,27 +121,36 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         },
         onSubmit: async(values: FormValues) => {
             try {
-                setIsLoading(true)
-                setIsOpen(false)
-                const finalDate = `${dayjs(values.date).format("ddd MMM DD YYYY")} ${values.time}:00 GMT+0800 (Philippine Standard Time)`
-                
-                const body:IAppointmentRequest = {
-                    customer: values.name,
-                    service: values.services,
-                    date: finalDate,
-                    email: values.email
+                if (captchaToken){
+                    setIsLoading(true)
+                    const finalDate = `${dayjs(values.date).format("ddd MMM DD YYYY")} ${values.time}:00 GMT+0800 (Philippine Standard Time)`
+                    
+                    const body:IAppointmentRequest = {
+                        customer: values.name,
+                        service: values.services,
+                        date: finalDate,
+                        email: values.email,
+                        token: captchaToken,
+                    }
+                    await schedule(JSON.stringify(body))
+                    if(!appointmentError) {
+                        setIsOpen(false)
+                        setSnackBarStatus({ show: true, message: "Appointment has successfully created.", bg:BG_COLOR.success})
+                        formik.resetForm()
+                        setSelectedTime("")
+                    }else {
+                        setSnackBarStatus({ show: true, message: "Error while scheduling an appointment.", bg: BG_COLOR.error})
+                    }
                 }
-                schedule(JSON.stringify(body))
-                setSnackBarStatus({ show: true, message: "Appointment has successfully created.", bg:BG_COLOR.success})
-                formik.resetForm()
-                setSelectedTime("")
+
             } catch (err) {
                 setSnackBarStatus({ show: true, message: "Error while scheduling an appointment.", bg: BG_COLOR.error})
+
             } finally {
                 setTimeout(() => {
                     setIsLoading(false)
                 }, 1000)
-
+                handleReCAPTCHA("")
             }
         },
         validationSchema: Yup.object().shape({
@@ -200,6 +210,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
         formik.resetForm()
         setSelectedTime("")
         setIsOpen(false)
+        handleReCAPTCHA("")
     }
     const minDate = new Date();
     const handleBookAppointment = () => {
@@ -347,33 +358,11 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             </MenuItem>
                             ))}
                         </Select>
-                        {formik.touched.services || formik.errors.services && (
+                        {formik.touched.services || Boolean(formik.errors.services) && (
                             <span className="text-luxe-red">{formik.errors.services}</span>
                         )}
                         </FormControl>
 
-                        {/* <FormControl fullWidth className="mt-3">
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DateTimePicker
-                            ampm={true}
-                            // format="HH:mm"
-                            value={dayjs(currentDate)}
-                            slotProps={{
-                                textField: {
-                                label: "Appointment Date",
-                                fullWidth: true,
-                                },
-                            }}
-                            onChange={value => {
-                                formik.setFieldValue('date', value?.toString());
-                            }}
-                            minDate={dayjs()}
-                            />
-                        </LocalizationProvider>
-                        {formik.touched.date && formik.errors.date && (
-                            <span className="text-red-500">{formik.errors.date}</span>
-                        )}
-                        </FormControl> */}
                         <Grid container spacing={1} >
                             <Grid item xs={12} sm={7} sx={{
                                 '& .MuiGrid-root .MuiGrid-item': {
@@ -443,6 +432,13 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                                 </FormControl>
                             </Grid>
                         </Grid>
+                      <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+                        <ReCAPTCHA
+                            ref={recaptchaRef}
+                            sitekey={import.meta.env.VITE_SITE_KEY}
+                            onChange={handleReCAPTCHA}
+                        />
+                        </div>
                     </DialogContent>
                 </form>
 
@@ -454,10 +450,10 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                     }
                     {
                         !isLoading ?
-                            <Button form="appointment" className="rounded-none text-luxe-light bg-luxe-red px-6 py-2 hover:bg-luxe-brown disabled:text-luxe-light" type="submit" disabled={!formik.dirty}>
+                            <Button form="appointment" className={`rounded-none text-luxe-light px-6 py-2 hover:bg-luxe-brown ${ !formik.dirty || !captchaToken ? "bg-luxe-nude" : "bg-luxe-red" }`} type="submit" disabled={!formik.dirty || !captchaToken}>
                                 Submit
                             </Button>
-                            : <CircularProgress color="secondary" />
+                            : <div className='px-8 py-1'><CircularProgress color="secondary" size={25} /></div>
                     }
                     </DialogActions>
             </Dialog>)

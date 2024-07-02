@@ -4,11 +4,13 @@ import (
 	"api/models"
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"net/smtp"
+	"net/url"
 	"os"
 	"time"
 
@@ -38,6 +40,29 @@ func NewRequest(to []string, subject, body, from string) *Request {
 		body:    body,
 		from:    from,
 	}
+}
+func verifyRecaptcha(token string) (bool, error) {
+	// Make a POST request to Google reCAPTCHA API
+	resp, err := http.PostForm("https://www.google.com/recaptcha/api/siteverify",
+		url.Values{
+			"secret":   {os.Getenv("RECAPTCHA_SECRET")},
+			"response": {token},
+		})
+
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	// Parse the JSON response
+	var result struct {
+		Success bool `json:"success"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return false, err
+	}
+
+	return result.Success, nil
 }
 func (r *Request) SendEmail() (bool, error) {
 	mime := "MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n"
@@ -82,6 +107,25 @@ func AddAppointment(c *gin.Context) {
 			Message: "",
 			Code:    400,
 			Errors:  []string{validationErr.Error()},
+		}
+		c.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+	validateReCAPTCHA, captchaErr := verifyRecaptcha(appointment.ReCaptchaToken)
+	if captchaErr != nil {
+		errorResponse := models.ErrorResponse{
+			Message: "Capcha Error found",
+			Code:    400,
+			Errors:  []string{captchaErr.Error()},
+		}
+		c.JSON(http.StatusBadRequest, errorResponse)
+		return
+	}
+	if !validateReCAPTCHA {
+		errorResponse := models.ErrorResponse{
+			Message: "Invalid ReCaptcha",
+			Code:    400,
+			Errors:  []string{},
 		}
 		c.JSON(http.StatusBadRequest, errorResponse)
 		return

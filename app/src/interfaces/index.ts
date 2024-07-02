@@ -23,4 +23,5 @@ export interface IAppointmentRequest {
     customer: string
     date: string
     email: string
+    token: string
 }

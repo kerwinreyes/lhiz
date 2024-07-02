@@ -37,6 +37,7 @@ const serviceReducerApp = (state = initialState, action: AppointmentActionTypes)
             return {
                 ...state,
                 scheduling: true,
+                error: ""
             }
         case SCHEDULE_APPOINTMENT_SUCCESS: 
             return {
