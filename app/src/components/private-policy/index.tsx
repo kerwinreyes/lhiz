@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogTitle, Divider, IconButton, List, ListItem, Stack, Typography } from "@mui/material";
+import { Button, Dialog, DialogTitle, Divider, IconButton, List, ListItem, Stack, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode } from "react";
 
@@ -12,13 +12,13 @@ const PrivacyPolicy = (props: IPrivacyPolicy) => {
     const customizeListItem = (title: string, description:string, children?: ReactNode) => {
         return (
             <>
-            <Box className="py-2">
+            <div className="py-2">
                 <Typography variant="subtitle2" align="justify" >
                     <b>{title}{ title ? ": " : ""}</b>{description}
                 </Typography>
                 { children && children }
                 <Divider sx={{ paddingTop: "10px" }} />
-            </Box>
+            </div>
             </>
         )
     }
