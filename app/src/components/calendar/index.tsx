@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { BG_COLOR } from '../../utils/constant';
 import { Button, 
+         Checkbox, 
          CircularProgress, 
          Dialog, 
          DialogActions, 
          DialogContent, 
          DialogTitle, 
          FormControl, 
+         FormControlLabel,  
          Grid, 
          IconButton, 
          InputAdornment, 
@@ -42,6 +44,7 @@ import dayjs from 'dayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import ReCAPTCHA from 'react-google-recaptcha';
 import useReCaptcha from '../../hooks/recaptcha';
+import PrivacyPolicy from '../private-policy';
 interface ICalendar {
     services: {label: string, value: string}[]
 }
@@ -62,6 +65,7 @@ interface FormValues {
   date: string,
   time: string,
   phone: string,
+  agree: boolean
 }
 interface IAppointment {
         id: string;
@@ -88,7 +92,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
     const [isMonthView, setIsMonthView] = useState<boolean>(true)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [snackBarStatus, setSnackBarStatus] = useState<{ show: boolean, message: string, bg: string}>({ show: false, message: "", bg:""})
-    
+    const [isTermsAndAgreementOpen, setIsTermsAndAgreementOpen] = useState<boolean>(false)
     const handleEventSelected = () => {
         setIsOpen(true)
         
@@ -118,6 +122,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             date: "",
             phone: "",
             time: "",
+            agree: false
         },
         onSubmit: async(values: FormValues) => {
             try {
@@ -159,7 +164,8 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
             services: Yup.string().required("Please select a service."),
             date: Yup.string().required("Please select a date"),
             phone: Yup.string().matches(/^9\d{9}$/, 'Enter valid phone number.'),
-            time: Yup.string().required("Please select a time.")
+            time: Yup.string().required("Please select a time."),
+            agree: Yup.boolean().oneOf([true],'Please check the checkbox')
         })
     })
     const handleSlotSelected= (info: SlotInfo) => {
@@ -293,7 +299,7 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                         position: 'absolute',
                         right: 8,
                         top: 8,
-                        color: (theme) => theme.palette.grey[500],
+                        color: (theme: { palette: { grey: any[]; }; }) => theme.palette.grey[500],
                     }}
                 >
                     <CloseIcon />
@@ -351,6 +357,21 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                             onBlur={formik.handleBlur}
                             error={formik.touched.services && Boolean(formik.errors.services)}
                             placeholder="Select a service"
+                            MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    maxHeight: "180px",
+                                  },
+                                },
+                                anchorOrigin: {
+                                  vertical: "bottom",
+                                  horizontal: "center",
+                                },
+                                transformOrigin: {
+                                  vertical: "top",
+                                  horizontal: "center",
+                                },
+                              }}
                         >
                             {services.map((service) => (
                             <MenuItem key={service.value} value={service.value}>
@@ -432,6 +453,25 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                                 </FormControl>
                             </Grid>
                         </Grid>
+                        <FormControl fullWidth style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+                            <Typography sx={{ fontSize: "11px"}} align="justify" className="text-gray-500" >
+                                By checking the box below, you acknowledge that you have read and understood this Privacy Policy and agree to the collection, use, and disclosure of your information as described herein.
+                            </Typography>
+                            {formik.touched.agree && formik.errors.agree && (
+                                <span className="text-luxe-red text-xs">{formik.errors.agree}</span>
+                            )}
+                            <FormControlLabel required control={
+                                <Checkbox 
+                                    name="agree" 
+                                    value={formik.values.agree}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                />
+                            } 
+                            label={<Typography variant="caption"> I agree to the <Button onClick={()=> setIsTermsAndAgreementOpen(true)} style={{ fontSize: "11px", padding: "0", textTransform: "none" }}>Privacy Policy</Button></Typography>}
+                            labelPlacement="end"
+                            />
+                        </FormControl>
                       <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
                         <ReCAPTCHA
                             ref={recaptchaRef}
@@ -458,6 +498,10 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                     </DialogActions>
             </Dialog>)
             }
+            {
+                isTermsAndAgreementOpen && <PrivacyPolicy isOpen={isTermsAndAgreementOpen} handleClose={() => setIsTermsAndAgreementOpen(false)} />
+            }
+
         </div>
     )
 }
