@@ -1,4 +1,4 @@
-import { Box, Dialog, DialogTitle, Divider, IconButton, List, ListItem, Stack, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogTitle, Divider, IconButton, List, ListItem, Stack, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode } from "react";
 
@@ -11,13 +11,15 @@ const PrivacyPolicy = (props: IPrivacyPolicy) => {
     const howWeUsetheData= "We use the information we collect solely for the purpose of scheduling and managing your appointments with Eliza. This may include:"
     const customizeListItem = (title: string, description:string, children?: ReactNode) => {
         return (
-            <Box sx={{ padding: "10px 0px" }}>
+            <>
+            <Box className="py-2">
                 <Typography variant="subtitle2" align="justify" >
                     <b>{title}{ title ? ": " : ""}</b>{description}
                 </Typography>
                 { children && children }
                 <Divider sx={{ paddingTop: "10px" }} />
             </Box>
+            </>
         )
     }
     const { isOpen, handleClose } = props
@@ -32,7 +34,6 @@ const PrivacyPolicy = (props: IPrivacyPolicy) => {
                     position: 'absolute',
                     right: 8,
                     top: 8,
-                    color: (theme: { palette: { grey: any[]; }; }) => theme.palette.grey[500],
                 }}
             >
                 <CloseIcon />
@@ -65,6 +66,9 @@ const PrivacyPolicy = (props: IPrivacyPolicy) => {
                 { customizeListItem("Changes to this Privacy Policy", "We may update this Privacy Policy from time to time.  We will post any changes on this page.  You are encouraged to review this Privacy Policy periodically for any updates.") }
                 { customizeListItem("Contact Us", "If you have any questions about this Privacy Policy, please contact us.") }
                 { customizeListItem("", "By using our online appointment website to book appointments, you consent to the collection, use, and sharing of your personal information in accordance with this privacy policy. If you do not agree with the terms of this policy, please do not use our online appointment website.")}
+                <Button className="rounded-none mb-5 text-luxe-light px-6 py-2 hover:bg-luxe-brown bg-luxe-red" onClick={() => handleClose()}>
+                    Continue
+                </Button>
             </Stack>
         </Dialog>
     )

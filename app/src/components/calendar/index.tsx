@@ -299,7 +299,6 @@ const CalendarEvents:React.FC<ICalendar> = (props) => {
                         position: 'absolute',
                         right: 8,
                         top: 8,
-                        color: (theme: { palette: { grey: any[]; }; }) => theme.palette.grey[500],
                     }}
                 >
                     <CloseIcon />
